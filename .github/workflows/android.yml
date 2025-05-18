@@ -1,10 +1,11 @@
-name: Android CI
+name: Android Build
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: "Package name of the game (used for module description)"
+        required: true
 
 jobs:
   build:
@@ -23,4 +24,4 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew assembleRelease
