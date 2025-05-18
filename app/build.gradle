@@ -4,8 +4,8 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "uk.lgl"
-        minSdkVersion 19
-        targetSdkVersion 30
+        minSdkVersion 21
+        targetSdkVersion 31
         versionCode 1
         versionName "2.9"
         ndk {
@@ -30,11 +30,11 @@ android {
             path file('src/main/jni/Android.mk')
         }
     }
-    ndkVersion = '22.0.7026061'
+
 }
 
 //dependencies must be placed below 'android' brackets to get it work on AIDE
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'eu.chainfire:libsuperuser:1.1.0.+'
+    implementation 'com.topjohnwu.superuser:libsuperuser:1.1.0.+'
 }

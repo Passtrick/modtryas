@@ -77,7 +77,7 @@ public class FloatingModMenuService extends Service {
 
     //***************** TARGET *********//
         String LibName = "libLibServer.so";
-    String targetPackage = "fps.zombie.shooting.fun.to.dead";
+    String targetPackage = "com.kiloo.subwaysurf";
     
     
     //region Variable
