@@ -1,10 +1,10 @@
 #include <pthread.h>
 #include <jni.h>
 #include <Socket/SocketClient.h>
-#include "src/Unity/Vector3.hpp"
-#include "src/Unity/Vector2.hpp"
-#include "src/Unity/Unity.h"
-#include "src/Unity/ESP.h"
+#include "Unity/Vector3.hpp"
+#include "Unity/Vector2.hpp"
+#include "Unity/Unity.h"
+#include "Unity/ESP.h"
 #include "Includes/Logger.h"
 #include "mm.h"
 SocketClient client;
