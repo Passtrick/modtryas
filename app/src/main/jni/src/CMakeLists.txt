@@ -19,18 +19,18 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,--
 
 # Directorios de inclusión global
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Includes
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Unity
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Substrate
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/KittyMemory
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Socket
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/Unity
+    ${CMAKE_CURRENT_SOURCE_DIR}/Substrate
+    ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory
+    ${CMAKE_CURRENT_SOURCE_DIR}/Socket
 )
 
 # Biblioteca ejecutable: inject
 add_executable(inject
-    src/Inject/inject.cpp
-    src/Inject/inject_main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inject/inject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Inject/inject_main.cpp
 )
 target_link_libraries(inject
     dl
@@ -39,8 +39,8 @@ target_link_libraries(inject
 
 # Primera biblioteca compartida: Client
 add_library(Client SHARED
-    src/Client.cpp
-    src/Socket/SocketClient.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Client.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Socket/SocketClient.cpp
 )
 target_link_libraries(Client
     m
@@ -51,21 +51,21 @@ target_link_libraries(Client
 
 # Segunda biblioteca compartida: musk
 add_library(musk SHARED
-    src/Server.cpp
-    src/Substrate/hde64.c
-    src/Substrate/SubstrateDebug.cpp
-    src/Substrate/SubstrateHook.cpp
-    src/Substrate/SubstratePosixMemory.cpp
-    src/KittyMemory/KittyMemory.cpp
-    src/KittyMemory/MemoryPatch.cpp
-    src/KittyMemory/MemoryBackup.cpp
-    src/KittyMemory/KittyUtils.cpp
-    src/Socket/SocketServer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Server.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Substrate/hde64.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/Substrate/SubstrateDebug.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Substrate/SubstrateHook.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Substrate/SubstratePosixMemory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory/KittyMemory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory/MemoryPatch.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory/MemoryBackup.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory/KittyUtils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Socket/SocketServer.cpp
 )
 
 # Incluir archivos de encabezado Unity
 target_include_directories(musk PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Unity
+    ${CMAKE_CURRENT_SOURCE_DIR}/Unity
 )
 
 target_link_libraries(musk
