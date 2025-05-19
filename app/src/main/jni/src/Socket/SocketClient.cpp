@@ -1,4 +1,4 @@
-#include "SocketClient.h"
+#include "Socket/SocketClient.h"
 
 SocketClient::SocketClient(){
     created = false;
