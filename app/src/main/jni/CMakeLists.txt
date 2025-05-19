@@ -4,23 +4,12 @@ project(ModMenu)
 # Configuración del estándar C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Establecer la versión mínima del SDK
 set(CMAKE_SYSTEM_VERSION 21)
 
 # Flags de compilación
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -fpermissive -fno-rtti -fno-exceptions -Wno-error=c++11-narrowing -fms-extensions")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -fno-rtti -fno-exceptions -fpermissive")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,--strip-all")
-
-# Directorios de inclusión
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Substrate
-    ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory
-    ${CMAKE_CURRENT_SOURCE_DIR}/And64InlineHook
-    ${CMAKE_CURRENT_SOURCE_DIR}/SOCKET
-)
 
 # Bibliotecas precompiladas
 add_library(GlobalInject SHARED IMPORTED)
@@ -30,6 +19,9 @@ set_target_properties(GlobalInject PROPERTIES IMPORTED_LOCATION
 add_library(VirtualInject SHARED IMPORTED)
 set_target_properties(VirtualInject PROPERTIES IMPORTED_LOCATION
     ${CMAKE_CURRENT_SOURCE_DIR}/RootLib/libVirtualInject.so)
+
+# Directorios de inclusión
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Primera biblioteca: MyLibName
 add_library(MyLibName SHARED
