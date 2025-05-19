@@ -39,7 +39,7 @@ target_link_libraries(MyLibName
 
 # Segunda biblioteca: LibServer
 add_library(LibServer SHARED
-    Server.cpp
+    server.cpp
     Substrate/hde64.c
     Substrate/SubstrateDebug.cpp
     Substrate/SubstrateHook.cpp
