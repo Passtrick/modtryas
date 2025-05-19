@@ -78,7 +78,7 @@ import java.lang.ref.WeakReference;
 import java.io.InputStream;
 import android.graphics.drawable.Drawable;
 import java.io.IOException;
-import eu.chainfire.libsuperuser.Shell;
+import com.topjohnwu.superuser.Shell;
 import android.graphics.Canvas;
 
 public class Floater extends Service {
@@ -180,22 +180,28 @@ public class Floater extends Service {
 
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-		initFloatingViewService();
-		
-        this.overlayView = new ESPView((Context)this);
-		
-		DrawCanvas();
-		
-		final Handler handler = new Handler();
-        handler.post(new Runnable() {
-                public void run() {
-                    Thread();
-                    handler.postDelayed(this, 1000);
-                }
-            });
-    }
+public void onCreate() {
+    super.onCreate();
+    
+    // Agregar aquí la inicialización de Shell
+    Shell.setDefaultBuilder(Shell.Builder.create()
+        .setFlags(Shell.FLAG_REDIRECT_STDERR)
+        .setTimeout(10));
+    
+    initFloatingViewService();
+    
+    this.overlayView = new ESPView((Context)this);
+    
+    DrawCanvas();
+    
+    final Handler handler = new Handler();
+    handler.post(new Runnable() {
+        public void run() {
+            Thread();
+            handler.postDelayed(this, 1000);
+        }
+    });
+}
 
 	public void Thread() {
         if (this.rootFrame != null) {
@@ -860,9 +866,9 @@ public class Floater extends Service {
 	
 	public int Game(String pkg) {
     try {
-        Shell.Result result = Shell.su("pidof " + pkg).exec();
-        if (!result.getOut().isEmpty()) {
-            return Integer.parseInt(result.getOut().get(0));
+        List<String> result = Shell.cmd("pidof " + pkg).exec().getOut();
+        if (!result.isEmpty()) {
+            return Integer.parseInt(result.get(0));
         }
         return -1;
     } catch (Exception e) {
@@ -879,39 +885,27 @@ public class Floater extends Service {
         String payload_source = getApplicationInfo().nativeLibraryDir + File.separator + "libmusk.so";
         String payload_dest = "/data/local/tmp/libmusk.so";
 
-        // Usar Magisk Shell para operaciones root
-        Shell.Result result = Shell.su(
+        // Ejecutar comandos con libsu
+        Shell.cmd(
             "chmod 777 " + injector,
             "cp " + payload_source + " " + payload_dest,
             "chmod 777 " + payload_dest
         ).exec();
 
-        if (!result.isSuccess()) {
-            Toast.makeText(this, "Failed to prepare injection", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        // Obtener PID usando Magisk Shell
-        result = Shell.su("pidof " + target).exec();
-        if (result.getOut().isEmpty()) {
+        // Obtener PID
+        List<String> pidResult = Shell.cmd("pidof " + target).exec().getOut();
+        if (pidResult.isEmpty()) {
             Toast.makeText(this, "Target process not found", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        int pid = Integer.parseInt(result.getOut().get(0));
+        int pid = Integer.parseInt(pidResult.get(0));
         
         // Ejecutar inyección
-        result = Shell.su(
-            injector + " " + pid + " " + payload_dest
-        ).exec();
-
-        if (!result.isSuccess()) {
-            Toast.makeText(this, "Injection failed", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+        Shell.cmd(injector + " " + pid + " " + payload_dest).exec();
 
         // Limpiar
-        Shell.su("rm " + payload_dest).exec();
+        Shell.cmd("rm " + payload_dest).exec();
 
         if (RunnigTask.Init() < 0) {
             Toast.makeText(this, "Injection Failed!", Toast.LENGTH_SHORT).show();
