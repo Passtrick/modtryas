@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def libsuVersion = '3.2.1'  // Movido aquí arriba para que esté disponible en todo el archivo
+
 android {
     namespace 'uk.lgl'
     compileSdkVersion 30
@@ -64,7 +66,6 @@ dependencies {
     implementation 'org.zeroturnaround:zt-zip:1.14'
     
     // Libsu dependencies with exclusions
-    def libsuVersion = '3.2.1'
     implementation("com.github.topjohnwu.libsu:core:${libsuVersion}") {
         exclude group: 'com.github.topjohnwu.libsu', module: 'service'
     }
@@ -73,9 +74,11 @@ dependencies {
     }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force "com.github.topjohnwu.libsu:core:${libsuVersion}"
-        force "com.github.topjohnwu.libsu:service:${libsuVersion}"
+configurations {
+    all {
+        resolutionStrategy {
+            force "com.github.topjohnwu.libsu:core:3.2.1"
+            force "com.github.topjohnwu.libsu:service:3.2.1"
+        }
     }
 }
