@@ -31,13 +31,13 @@ android {
 
     sourceSets { 
         main { 
-            jni.srcDirs = ['src/main/jni', 'src/main/jni/'] 
+            jni.srcDirs = ['src/main/jni/src', 'src/main/jni/src/'] 
         }
     }
 
     externalNativeBuild {
         cmake {
-            path file('src/main/jni/CMakeLists.txt')
+            path file('src/main/jni/src/CMakeLists.txt')
         }
     }
 
