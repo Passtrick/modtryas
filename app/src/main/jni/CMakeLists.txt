@@ -21,12 +21,25 @@ set_target_properties(VirtualInject PROPERTIES IMPORTED_LOCATION
     ${CMAKE_CURRENT_SOURCE_DIR}/RootLib/libVirtualInject.so)
 
 # Directorios de inclusión
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/Unity
+    ${CMAKE_CURRENT_SOURCE_DIR}/Substrate
+    ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory
+    ${CMAKE_CURRENT_SOURCE_DIR}/And64InlineHook
+    ${CMAKE_CURRENT_SOURCE_DIR}/SOCKET
+)
 
 # Primera biblioteca: MyLibName
 add_library(MyLibName SHARED
     Main.cpp
     SOCKET/client.cpp
+)
+
+target_include_directories(MyLibName PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Unity
 )
 
 target_link_libraries(MyLibName
@@ -51,6 +64,11 @@ add_library(LibServer SHARED
     KittyMemory/KittyUtils.cpp
     And64InlineHook/And64InlineHook.cpp
     SOCKET/server.cpp
+)
+
+target_include_directories(LibServer PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Unity
 )
 
 target_link_libraries(LibServer
