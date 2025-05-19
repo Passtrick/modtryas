@@ -25,7 +25,8 @@ public class NepRoot extends Activity {
     
     public int Game(String pkg) {
         try {
-            List<String> output = Shell.cmd("(toolbox ps; toolbox ps -A; toybox ps; toybox ps -A) | grep \" " + pkg + "$\"").exec().getOut();
+            // Usa Shell.sh para ejecutar comandos
+            List<String> output = Shell.sh("(toolbox ps; toolbox ps -A; toybox ps; toybox ps -A) | grep \" " + pkg + "$\"").exec().getOut();
             for (String line : output) {
                 String[] parts = line.trim().split("\\s+");
                 if (parts.length >= 2) {
