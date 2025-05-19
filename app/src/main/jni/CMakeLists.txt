@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_SYSTEM_VERSION 21)
 
+# Forzar compilación para 32 bits
+set(ANDROID_ABI "armeabi-v7a")
+set(CMAKE_ANDROID_ARCH_ABI "armeabi-v7a")
+set(CMAKE_ANDROID_ARM_MODE ON)
+
 # Flags de compilación
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -fpermissive -fno-rtti -fno-exceptions -Wno-error=c++11-narrowing -fms-extensions")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -fno-rtti -fno-exceptions -fpermissive")
@@ -59,7 +64,7 @@ target_link_libraries(MyLibName
 
 # Segunda biblioteca: LibServer
 add_library(LibServer SHARED
-    server.cpp
+    Server.cpp
     Substrate/hde64.c
     Substrate/SubstrateDebug.cpp
     Substrate/SubstrateHook.cpp
