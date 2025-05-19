@@ -1,7 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'com.musk.injectv1'
     compileSdkVersion 33
+    
     defaultConfig {
         applicationId "com.musk.injectv1"
         minSdkVersion 22
@@ -26,6 +28,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Agregar estas líneas para manejar el warning de 32-bit
+            ndk {
+                abiFilters 'armeabi-v7a', 'arm64-v8a'
+            }
         }
     }
 
@@ -56,6 +63,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    
+    // Agregar esto para evitar problemas con manifest merger
+    androidResources {
+        noCompress 'tflite'
+    }
 }
 
 dependencies {
@@ -65,4 +77,15 @@ dependencies {
     implementation 'com.github.topjohnwu.libsu:core:5.0.3'
     implementation 'com.github.topjohnwu.libsu:service:5.0.3'
     implementation 'com.github.topjohnwu.libsu:nio:5.0.3'
+    
+    // Agregar estas dependencias para mejor compatibilidad
+    implementation 'androidx.core:core:1.7.0'
+    implementation 'androidx.annotation:annotation:1.3.0'
+}
+
+// Agregar esta configuración para repositorios
+repositories {
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
 }
