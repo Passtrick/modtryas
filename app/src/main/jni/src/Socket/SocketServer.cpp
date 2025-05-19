@@ -1,4 +1,4 @@
-#include "SocketServer.h"
+#include "Socket/Server.h"
 
 SocketServer::SocketServer(){
     isCreated = false;
