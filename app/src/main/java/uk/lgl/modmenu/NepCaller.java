@@ -1,8 +1,8 @@
 package uk.lgl.modmenu;
 
-
 import android.app.Application;
-import eu.chainfire.libsuperuser.Shell;
+import com.topjohnwu.superuser.Shell;
+import com.topjohnwu.superuser.io.SuFile;
 import java.io.IOException;
 
 public class NepCaller extends Application {
@@ -10,11 +10,13 @@ public class NepCaller extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        try {
-            Runtime.getRuntime().exec("su");
-            Shell.SU.run("setenforce 0");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Shell.Config.setFlags(Shell.FLAG_REDIRECT_STDERR);
+        Shell.Config.verboseLogging(BuildConfig.DEBUG);
+
+        // Inicializa Shell en el hilo principal
+        Shell.getShell(shell -> {
+            // Ejecuta comandos root
+            shell.newJob().add("setenforce 0").submit();
+        });
     }
 }
