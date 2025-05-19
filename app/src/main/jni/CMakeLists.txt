@@ -20,7 +20,7 @@ add_library(VirtualInject SHARED IMPORTED)
 set_target_properties(VirtualInject PROPERTIES IMPORTED_LOCATION
     ${CMAKE_CURRENT_SOURCE_DIR}/RootLib/libVirtualInject.so)
 
-# Directorios de inclusión
+# Directorios de inclusión global
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Includes
@@ -29,6 +29,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/KittyMemory
     ${CMAKE_CURRENT_SOURCE_DIR}/And64InlineHook
     ${CMAKE_CURRENT_SOURCE_DIR}/SOCKET
+    ${CMAKE_CURRENT_SOURCE_DIR}/Canvas
 )
 
 # Primera biblioteca: MyLibName
@@ -37,9 +38,15 @@ add_library(MyLibName SHARED
     SOCKET/client.cpp
 )
 
+target_compile_definitions(MyLibName PRIVATE
+    -DUNITY_HEADER="${CMAKE_CURRENT_SOURCE_DIR}/Unity/Unity.h"
+)
+
 target_include_directories(MyLibName PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Unity
+    ${CMAKE_CURRENT_SOURCE_DIR}/Includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/Canvas
 )
 
 target_link_libraries(MyLibName
@@ -66,9 +73,15 @@ add_library(LibServer SHARED
     SOCKET/server.cpp
 )
 
+target_compile_definitions(LibServer PRIVATE
+    -DUNITY_HEADER="${CMAKE_CURRENT_SOURCE_DIR}/Unity/Unity.h"
+)
+
 target_include_directories(LibServer PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Unity
+    ${CMAKE_CURRENT_SOURCE_DIR}/Includes
+    ${CMAKE_CURRENT_SOURCE_DIR}/Canvas
 )
 
 target_link_libraries(LibServer
