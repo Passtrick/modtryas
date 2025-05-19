@@ -1,6 +1,6 @@
 #include <pthread.h>
 #include <jni.h>
-#include <src/Socket/SocketClient.h>
+#include <Socket/SocketClient.h>
 #include "src/Unity/Vector3.hpp"
 #include "src/Unity/Vector2.hpp"
 #include "src/Unity/Unity.h"
