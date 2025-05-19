@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
 	public  void Helo(final Context context) {
         Calendar date = Calendar.getInstance();
         String currentTime = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String expireTime = new SimpleDateFormat("20210808").format(date.getTime());
+        String expireTime = new SimpleDateFormat("20280808").format(date.getTime());
         int intcurrentTime = Integer.parseInt(currentTime);
         int intexpireTime = Integer.parseInt(expireTime);
         if (intcurrentTime >= intexpireTime) {
