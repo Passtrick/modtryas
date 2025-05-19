@@ -201,7 +201,7 @@ public class MainActivity extends Activity {
 						//
 				startService(new Intent(MainActivity.this,Floater.class));
 		
-				MainActivity.this.startActivity(new Intent(MainActivity.this.getPackageManager().getLaunchIntentForPackage("com.dts.freefireth")));
+				MainActivity.this.startActivity(new Intent(MainActivity.this.getPackageManager().getLaunchIntentForPackage("com.kiloo.subwaysurf")));
 				
 				}
 				});
