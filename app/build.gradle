@@ -61,24 +61,8 @@ android {
     }
 }
 
+//dependencies must be placed below 'android' brackets to get it work on AIDE
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'org.zeroturnaround:zt-zip:1.14'
-    
-    // Libsu dependencies with exclusions
-    implementation("com.github.topjohnwu.libsu:core:${libsuVersion}") {
-        exclude group: 'com.github.topjohnwu.libsu', module: 'service'
-    }
-    implementation("com.github.topjohnwu.libsu:service:${libsuVersion}") {
-        exclude group: 'com.github.topjohnwu.libsu', module: 'core'
-    }
-}
-
-configurations {
-    all {
-        resolutionStrategy {
-            force "com.github.topjohnwu.libsu:core:3.2.1"
-            force "com.github.topjohnwu.libsu:service:3.2.1"
-        }
-    }
+    implementation 'com.topjohnwu.superuser:libsuperuser:1.1.0'
 }
