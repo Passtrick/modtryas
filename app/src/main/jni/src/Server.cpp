@@ -2,7 +2,7 @@
 #include <jni.h>
 #include <stdio.h>
 #include <wchar.h>
-#include <src/Substrate/SubstrateHook.h>
+#include "Substrate/SubstrateHook.h"
 #include <src/Socket/SocketServer.h>
 #include "src/Unity/Quaternion.hpp"
 #include "src/Unity/Vector3.hpp"
