@@ -64,11 +64,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     
-    // Agregar esto para evitar problemas con manifest merger
-    androidResources {
-        noCompress 'tflite'
     }
-}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -83,9 +79,3 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.3.0'
 }
 
-// Agregar esta configuración para repositorios
-repositories {
-    google()
-    mavenCentral()
-    maven { url "https://jitpack.io" }
-}
