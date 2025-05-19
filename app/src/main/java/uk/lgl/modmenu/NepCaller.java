@@ -2,14 +2,13 @@ package uk.lgl.modmenu;
 
 import android.app.Application;
 import com.topjohnwu.superuser.Shell;
-import com.topjohnwu.superuser.io.SuFile;
-import java.io.IOException;
 
 public class NepCaller extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
+        // Configura el shell
         Shell.Config.setFlags(Shell.FLAG_REDIRECT_STDERR);
         Shell.Config.verboseLogging(BuildConfig.DEBUG);
 
