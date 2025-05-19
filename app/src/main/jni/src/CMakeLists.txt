@@ -17,23 +17,28 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMMON_FLAGS} -Werror -s -fpermissive 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMMON_FLAGS} -fno-rtti -fno-exceptions -fpermissive")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--gc-sections,--strip-all")
 
-# Definir el directorio base del proyecto
+# Definir directorios base
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set(INCLUDE_ROOT ${PROJECT_ROOT}/include)
 
 # Directorios de inclusión global
 include_directories(
     ${PROJECT_ROOT}
-    ${PROJECT_ROOT}/Includes
-    ${PROJECT_ROOT}/Unity
-    ${PROJECT_ROOT}/Substrate
-    ${PROJECT_ROOT}/KittyMemory
-    ${PROJECT_ROOT}/Socket
+    ${PROJECT_ROOT}/include
+    ${PROJECT_ROOT}/include/Socket
+    ${PROJECT_ROOT}/include/Unity
+    ${PROJECT_ROOT}/include/Substrate
+    ${PROJECT_ROOT}/include/KittyMemory
 )
 
 # Biblioteca ejecutable: inject
 add_executable(inject
     ${PROJECT_ROOT}/Inject/inject.cpp
     ${PROJECT_ROOT}/Inject/inject_main.cpp
+)
+target_include_directories(inject PRIVATE
+    ${PROJECT_ROOT}
+    ${PROJECT_ROOT}/include
 )
 target_link_libraries(inject
     dl
@@ -47,6 +52,7 @@ add_library(Client SHARED
 )
 target_include_directories(Client PRIVATE
     ${PROJECT_ROOT}
+    ${PROJECT_ROOT}/include
 )
 target_link_libraries(Client
     m
@@ -71,6 +77,7 @@ add_library(musk SHARED
 
 target_include_directories(musk PRIVATE
     ${PROJECT_ROOT}
+    ${PROJECT_ROOT}/include
     ${PROJECT_ROOT}/Unity
 )
 
@@ -81,12 +88,10 @@ target_link_libraries(musk
     GLESv2
 )
 
-# Asegurar que los archivos de encabezado Unity se incluyan correctamente
 set_target_properties(musk PROPERTIES
     COMPILE_DEFINITIONS "UNITY_HEADERS_INCLUDED"
 )
 
-# Configuración adicional para debug
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(inject PRIVATE DEBUG)
     target_compile_definitions(Client PRIVATE DEBUG)
