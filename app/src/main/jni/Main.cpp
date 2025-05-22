@@ -61,24 +61,18 @@ void FunctionExample(void *instance) {
 }
 
 void *hack_thread(void *) {
-    // Usar el string ofuscado directamente
-    LOGI(OBFUSCATE("pthread created"));
+    LOGI("%s", OBFUSCATE("pthread created").get_str());
 
-    // Para la verificación de la librería, necesitamos una variable temporal
-    const char *libName = OBFUSCATE("libil2cpp.so").decrypt();
+    const char *libName = targetLibName.get_str();
     do {
         sleep(1);
     } while (!isLibraryLoaded(libName));
 
-    // Para el mensaje de log, usar el string directamente
-    LOGI(OBFUSCATE("Library libil2cpp.so has been loaded"));
+    LOGI("%s", OBFUSCATE("Library loaded successfully").get_str());
 
 #if defined(__aarch64__)
-    // Tus hooks y patches aquí
-    HOOK("str", FunctionExample, old_FunctionExample);
     HOOK_LIB("libil2cpp.so", "0x123456", FunctionExample, old_FunctionExample);
 #else
-    HOOK("str", FunctionExample, old_FunctionExample);
     HOOK_LIB("libil2cpp.so", "0x123456", FunctionExample, old_FunctionExample);
 #endif
 
