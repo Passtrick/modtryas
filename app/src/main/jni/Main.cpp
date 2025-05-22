@@ -16,7 +16,7 @@
 #include "Menu/Setup.h"
 
 // Cambiado para que coincida con el nombre de la librería que cargarás
-static const auto targetLibName = OBFUSCATE("libil2cpp.so");
+static const auto targetLibName = OBFUSCATE("libFileA.so");
 
 #include "Includes/Macros.h"
 
