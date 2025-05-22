@@ -15,6 +15,7 @@
 #include "KittyMemory/MemoryPatch.h"
 #include "Menu/Setup.h"
 
+// Cambiado para que coincida con el nombre de la librería que cargarás
 static const auto targetLibName = OBFUSCATE("libil2cpp.so");
 
 #include "Includes/Macros.h"
