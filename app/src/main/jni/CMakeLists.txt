@@ -4,9 +4,22 @@ project(MyLibName)
 # Configuración del estándar C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Establecer la versión mínima del SDK para arm64-v8a
+# Establecer la versión mínima del SDK
 set(CMAKE_SYSTEM_VERSION 21)
+
+# Flags de optimización
+if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fvisibility=hidden -fvisibility-inlines-hidden")
+endif()
+
+# Configuración específica para cada ABI
+if(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon")
+elseif(${ANDROID_ABI} STREQUAL "arm64-v8a")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv8-a")
+endif()
 
 # Directorios de inclusión
 include_directories(
@@ -19,7 +32,7 @@ include_directories(
 )
 
 # Agregar la biblioteca
-add_library(MyLibName SHARED
+add_library(${PROJECT_NAME} SHARED
     Main.cpp
     Substrate/hde64.c
     Substrate/SubstrateDebug.cpp
@@ -34,4 +47,7 @@ add_library(MyLibName SHARED
 )
 
 # Vincular bibliotecas necesarias
-target_link_libraries(MyLibName log)
+target_link_libraries(${PROJECT_NAME} 
+    log
+    android
+)
