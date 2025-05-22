@@ -1,14 +1,13 @@
-name: Android Build
+name: Android Library Build
 
 on:
   workflow_dispatch:
     inputs:
-      package_name:
-        description: "Package name of the game (used for module description)"
+      target_name:
+        description: "Target name (for library description)"
         required: true
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     
@@ -20,16 +19,34 @@ jobs:
       with:
         distribution: temurin
         java-version: 11
-        cache: gradle
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
         
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
         
-    - name: Configure and build
+    - name: Build native libraries
       run: |
-        ./gradlew assembleRelease
+        ./gradlew :app:externalNativeBuildRelease
         
-    - uses: actions/upload-artifact@v4
+    - name: Collect and package libraries
+      run: |
+        mkdir -p libs/armeabi-v7a
+        mkdir -p libs/arm64-v8a
+        cp -r app/build/intermediates/cmake/release/obj/armeabi-v7a/*.so libs/armeabi-v7a/
+        cp -r app/build/intermediates/cmake/release/obj/arm64-v8a/*.so libs/arm64-v8a/
+        cd libs
+        zip -r ../libraries.zip *
+        
+    - name: Upload libraries
+      uses: actions/upload-artifact@v4
       with:
-        name: ModMenu-${{ github.event.inputs.package_name }}
-        path: app/build/outputs/apk/release/app-release.apk
+        name: mod-libs-${{ github.event.inputs.target_name }}
+        path: libraries.zip
+
+    - name: Generate build info
+      run: |
+        echo "Build completed at $(date)" > build_info.txt
+        echo "Target name: ${{ github.event.inputs.target_name }}" >> build_info.txt
+        echo "Includes: ARMv7-a and ARM64-v8a libraries" >> build_info.txt
