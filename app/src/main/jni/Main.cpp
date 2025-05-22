@@ -15,7 +15,7 @@
 #include "KittyMemory/MemoryPatch.h"
 #include "Menu/Setup.h"
 
-#define targetLibName OBFUSCATE("libil2cpp.so")
+static const auto targetLibName = OBFUSCATE("libil2cpp.so");
 
 #include "Includes/Macros.h"
 
@@ -61,13 +61,17 @@ void FunctionExample(void *instance) {
 }
 
 void *hack_thread(void *) {
-    LOGI("%s", OBFUSCATE("pthread created").decrypt());
+    // Usar el string ofuscado directamente
+    LOGI(OBFUSCATE("pthread created"));
 
+    // Para la verificación de la librería, necesitamos una variable temporal
+    const char *libName = OBFUSCATE("libil2cpp.so").decrypt();
     do {
         sleep(1);
-    } while (!isLibraryLoaded(targetLibName.decrypt()));
+    } while (!isLibraryLoaded(libName));
 
-    LOGI("%s %s", OBFUSCATE("Library").decrypt(), targetLibName.decrypt());
+    // Para el mensaje de log, usar el string directamente
+    LOGI(OBFUSCATE("Library libil2cpp.so has been loaded"));
 
 #if defined(__aarch64__)
     // Tus hooks y patches aquí
