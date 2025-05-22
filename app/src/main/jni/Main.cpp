@@ -61,14 +61,14 @@ void FunctionExample(void *instance) {
 }
 
 void *hack_thread(void *) {
-    LOGI("%s", OBFUSCATE("pthread created").get_str());
+    LOGI(OBFUSCATE("pthread created"));
 
-    const char *libName = targetLibName.get_str();
+    const char *libName = OBFUSCATE("libil2cpp.so");
     do {
         sleep(1);
     } while (!isLibraryLoaded(libName));
 
-    LOGI("%s", OBFUSCATE("Library loaded successfully").get_str());
+    LOGI(OBFUSCATE("Library loaded successfully"));
 
 #if defined(__aarch64__)
     HOOK_LIB("libil2cpp.so", "0x123456", FunctionExample, old_FunctionExample);
@@ -133,12 +133,12 @@ void lib_main() {
 }
 
 int RegisterMenu(JNIEnv *env) {
-    JNINativeMethod methods[] = {
-            {OBFUSCATE("Icon"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void *>(Icon)},
-            {OBFUSCATE("IconWebViewData"),  OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void *>(IconWebViewData)},
-            {OBFUSCATE("IsGameLibLoaded"),  OBFUSCATE("()Z"), reinterpret_cast<void *>(isGameLibLoaded)},
-            {OBFUSCATE("Init"),  OBFUSCATE("(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/TextView;)V"), reinterpret_cast<void *>(Init)},
-            {OBFUSCATE("GetFeatureList"),  OBFUSCATE("()[Ljava/lang/String;"), reinterpret_cast<void *>(GetFeatureList)},
+    static JNINativeMethod methods[] = {
+            {OBFUSCATE("Icon"), OBFUSCATE("()Ljava/lang/String;"), (void *) Icon},
+            {OBFUSCATE("IconWebViewData"), OBFUSCATE("()Ljava/lang/String;"), (void *) IconWebViewData},
+            {OBFUSCATE("IsGameLibLoaded"), OBFUSCATE("()Z"), (void *) isGameLibLoaded},
+            {OBFUSCATE("Init"), OBFUSCATE("(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/TextView;)V"), (void *) Init},
+            {OBFUSCATE("GetFeatureList"), OBFUSCATE("()[Ljava/lang/String;"), (void *) GetFeatureList},
     };
 
     jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Menu"));
