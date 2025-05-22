@@ -61,13 +61,13 @@ void FunctionExample(void *instance) {
 }
 
 void *hack_thread(void *) {
-    LOGI(OBFUSCATE("pthread created"));
+    LOGI("%s", OBFUSCATE("pthread created").decrypt());
 
     do {
         sleep(1);
-    } while (!isLibraryLoaded(targetLibName));
+    } while (!isLibraryLoaded(targetLibName.decrypt()));
 
-    LOGI(OBFUSCATE("Library %s has been loaded"), targetLibName);
+    LOGI("%s %s", OBFUSCATE("Library").decrypt(), targetLibName.decrypt());
 
 #if defined(__aarch64__)
     // Tus hooks y patches aquí
