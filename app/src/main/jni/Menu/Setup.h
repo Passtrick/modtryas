@@ -82,7 +82,7 @@ void *exit_thread(void *) {
 }
 
 void CheckOverlayPermission(JNIEnv *env, jclass thiz, jobject ctx) {
-    LOGI("%s", OBFUSCATE("Check overlay permission").get_str());
+    LOGI(OBFUSCATE("Check overlay permission"));  // Quitamos get_str()
 
     int sdkVer = api_level();
     if (sdkVer >= 23) {
@@ -99,7 +99,7 @@ void CheckOverlayPermission(JNIEnv *env, jclass thiz, jobject ctx) {
         }
     }
 
-    LOGI("%s", OBFUSCATE("Start service").get_str());
+    LOGI(OBFUSCATE("Start service"));  // Quitamos get_str()
     startService(env, ctx);
 }
 
@@ -116,12 +116,15 @@ void Init(JNIEnv *env, jobject thiz, jobject ctx, jobject title, jobject subtitl
     initValid = true;
 }
 
+// Removemos estas funciones de aquí ya que están en Menu.h
+/*
 const char *Icon() {
-    return "";  // Espacio para tu imagen en base64
+    return "";
 }
 
 const char *IconWebViewData() {
-    return "";  // Espacio para tus datos web
+    return "";
 }
+*/
 
 #endif //MODMENU_SETUP_H
