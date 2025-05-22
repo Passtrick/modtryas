@@ -8,6 +8,7 @@ on:
         required: true
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     
@@ -24,22 +25,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
         
-    - name: Build with Gradle
-      run: ./gradlew assembleRelease --stacktrace
-        
-    - name: Find APK
+    - name: Configure and build
       run: |
-        echo "Searching for APK files..."
-        find app/build -name "*.apk" -type f
+        ./gradlew assembleRelease
         
-    - name: List build outputs
-      run: |
-        echo "Contents of app/build/outputs:"
-        ls -R app/build/outputs/
-        
-    - name: Upload whatever is in outputs
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
         name: ModMenu-${{ github.event.inputs.package_name }}
-        path: app/build/outputs/
-        if-no-files-found: warn
+        path: app/build/outputs/apk/release/app-release.apk

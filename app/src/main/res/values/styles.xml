@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Material">
-        <item name="android:colorPrimary">@color/colorPrimary</item>
-        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:colorAccent">@color/colorAccent</item>
-        <item name="android:navigationBarColor">?android:colorPrimary</item>
-	</style>
+        <!-- Customize your theme here. -->
+        <item name="android:background">@color/backgroundColor</item>
+    </style>
 </resources>
