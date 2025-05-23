@@ -357,44 +357,13 @@ void hack_prepare(const char *game_data_dir_param, void *arm_so_data_param, size
     LOGI("hack_prepare started in thread: %d", gettid());
     if (!game_data_dir_param) {
         LOGE("game_data_dir_param is null in hack_prepare. Aborting.");
-        // Si arm_so_data_param fue mapeado y no se va a usar, liberarlo.
-        if (arm_so_data_param && arm_so_length_param > 0) {
-             LOGD("Munmap'ing arm_so_data_param in hack_prepare due to null game_data_dir_param.");
-             munmap(arm_so_data_param, arm_so_length_param);
-        }
         return;
     }
 
-    int api_level = android_get_device_api_level();
-    LOGI("Device API level: %d", api_level);
-    LOGI("Game data dir received in hack_prepare: %s", game_data_dir_param);
-    LOGI("ARM SO data: %p, length: %zu", arm_so_data_param, arm_so_length_param);
-
-#if defined(__i386__) || defined(__x86_64__)
-    LOGI("Running on x86/x86_64. Will attempt NativeBridgeLoad.");
-    // En x86/x86_64, arm_so_data_param y arm_so_length_param son para la librería .so ARM auxiliar.
-    if (arm_so_data_param && arm_so_length_param > 0) {
-        if (!NativeBridgeLoad(game_data_dir_param, api_level, arm_so_data_param, arm_so_length_param)) {
-            // NativeBridgeLoad falló, o no fue necesario (p.ej., juego x86 nativo), o ya liberó arm_so_data_param.
-            LOGI("NativeBridgeLoad returned false or was not applicable. Attempting direct hack_start for %s.", game_data_dir_param);
-            hack_start(game_data_dir_param); // Intentar el hack directamente (para juegos x86).
-        }
-        // Si NativeBridgeLoad tuvo éxito, cargó la librería ARM, y esa librería llamó a su propio hack_start.
-        // arm_so_data_param ya fue liberado (munmap) por NativeBridgeLoad.
-    } else {
-        LOGW("No ARM helper library data provided for x86/x86_64, or mmap failed earlier. Attempting direct hack_start for %s.", game_data_dir_param);
-        hack_start(game_data_dir_param); // Fallback si no hay datos del .so auxiliar.
-    }
-#else
-    // En arquitecturas ARM, hack_prepare llama directamente a hack_start.
-    // arm_so_data_param y arm_so_length_param no se usan aquí (deberían ser nullptr/0).
-    LOGI("Running on ARM. Calling hack_start directly for %s.", game_data_dir_param);
-    if (arm_so_data_param && arm_so_length_param > 0) {
-        LOGW("arm_so_data_param is unexpectedly non-null on ARM. Munmap'ing to prevent leak.");
-        munmap(arm_so_data_param, arm_so_length_param); // No debería ocurrir, pero por si acaso.
-    }
+    // Eliminar toda la lógica de NativeBridge para la versión APK
+    LOGI("Running direct hack_start for: %s", game_data_dir_param);
     hack_start(game_data_dir_param);
-#endif
+    
     LOGI("hack_prepare finished for %s.", game_data_dir_param);
 }
 
