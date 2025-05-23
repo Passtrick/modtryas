@@ -1,52 +1,52 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
     
     defaultConfig {
-        applicationId "com.android.support"
-        minSdkVersion 21  // Cambiado a 21 por requerimiento de arm64-v8a
-        targetSdkVersion 31
+        applicationId "com.perfare.il2cppdumper"
+        minSdkVersion 21
+        targetSdkVersion 33
         versionCode 1
-        versionName "3.2"
+        versionName "1.0"
         
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_STL=c++_static"
-                cppFlags "-std=c++17"
-                abiFilters 'armeabi-v7a', 'arm64-v8a'
+                cppFlags "-std=c++20"
+                arguments "-DCMAKE_BUILD_TYPE=Release"
             }
         }
-        signingConfig signingConfigs.debug
+        
+        ndk {
+            // No especificamos versión para usar la default de GitHub Actions
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
     }
     
     buildTypes {
         release {
-            shrinkResources false
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-        debug {
-            shrinkResources false
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug // Usar debug keystore para CI
         }
     }
     
     externalNativeBuild {
         cmake {
-            path "src/main/jni/CMakeLists.txt"
-            version "3.22.1"
+            path "src/main/cpp/CMakeLists.txt"
         }
     }
-
-    // Agregar soporte para Java 8
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+    
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
