@@ -368,26 +368,17 @@ void hack_prepare(const char *game_data_dir_param, void *arm_so_data_param, size
 }
 
 #if defined(__arm__) || defined(__aarch64__)
-// Este JNI_OnLoad es para la librería ARM auxiliar cuando se carga en un proceso x86 mediante NativeBridge.
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
-    // 'reserved' se espera que sea const char* game_data_dir
-    const char *game_data_dir = (const char *) reserved;
-    LOGI("JNI_OnLoad (ARM helper library) called. Game data dir: %s", game_data_dir ? game_data_dir : "null");
+// Esta versión solo se usará cuando sea explícitamente llamada
+void InitDumper(JavaVM* vm, const char* game_data_dir) {
+    LOGI("InitDumper called for ARM. Game data dir: %s", game_data_dir);
     
-    if (!vm) {
-        LOGE("JNI_OnLoad (ARM helper): JavaVM is null!");
-        return JNI_ERR;
-    }
     if (!game_data_dir) {
-        LOGE("JNI_OnLoad (ARM helper): game_data_dir (reserved) is null!");
-        return JNI_ERR;
+        LOGE("InitDumper: game_data_dir is null!");
+        return;
     }
 
-    // Iniciar el volcado en un nuevo hilo desde la librería ARM.
     std::thread hack_thread(hack_start, game_data_dir);
     hack_thread.detach();
-    LOGI("JNI_OnLoad (ARM helper) finished, hack_start detached.");
-    return JNI_VERSION_1_6;
 }
 #endif
 
