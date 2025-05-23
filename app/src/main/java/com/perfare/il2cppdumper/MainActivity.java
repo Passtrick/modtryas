@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("il2cppdumper");
     }
     
-    public native void dumpIl2Cpp(String packageName, String dataDir);
+    public native void dumpIl2Cpp(String dataDir);
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,26 +51,26 @@ public class MainActivity extends AppCompatActivity {
         });
         
         dumpButton.setOnClickListener(v -> {
-            if (!selectedPackage.isEmpty()) {
-                String dataDir = PackageUtils.getAppDataDir(this, selectedPackage);
-                if (dataDir != null) {
-                    new Thread(() -> {
-                        dumpIl2Cpp(selectedPackage, dataDir);
-                        runOnUiThread(() -> 
-                            Toast.makeText(MainActivity.this, 
-                                "Dump completed! Check /files/dump.cs", 
-                                Toast.LENGTH_LONG).show());
-                    }).start();
-                } else {
-                    Toast.makeText(this, 
-                        "Failed to get app data directory", 
-                        Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, 
-                    "Please select an app first", 
-                    Toast.LENGTH_SHORT).show();
-            }
-        });
+    if (!selectedPackage.isEmpty()) {
+        String dataDir = PackageUtils.getAppDataDir(this, selectedPackage);
+        if (dataDir != null) {
+            new Thread(() -> {
+                dumpIl2Cpp(dataDir); // Solo pasamos dataDir ahora
+                runOnUiThread(() -> 
+                    Toast.makeText(MainActivity.this, 
+                        "Dump completed! Check /files/dump.cs", 
+                        Toast.LENGTH_LONG).show());
+            }).start();
+        } else {
+            Toast.makeText(this, 
+                "Failed to get app data directory", 
+                Toast.LENGTH_SHORT).show();
+        }
+    } else {
+        Toast.makeText(this, 
+            "Please select an app first", 
+            Toast.LENGTH_SHORT).show();
+    }
+});
     }
 }
