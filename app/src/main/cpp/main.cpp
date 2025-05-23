@@ -1,11 +1,8 @@
 #include <jni.h>
 #include <string>
 #include <unistd.h>
-#include <sys/mman.h>
-#include <dlfcn.h>
 #include "hack.h"
 #include "log.h"
-#include "game.h"
 #include <thread>
 
 extern "C" JNIEXPORT void JNICALL
@@ -15,21 +12,24 @@ Java_com_perfare_il2cppdumper_MainActivity_dumpIl2Cpp(
     jstring packageName,
     jstring dataDir) {
     
-    const char* pkg = env->GetStringUTFChars(packageName, nullptr);
     const char* dataDirStr = env->GetStringUTFChars(dataDir, nullptr);
     
-    LOGI("Starting dump for package: %s", pkg);
-    LOGI("Data directory: %s", dataDirStr);
+    LOGI("Starting dump for data directory: %s", dataDirStr);
     
     // Verificar root si es necesario
     if (getuid() != 0) {
         LOGW("Not running as root, some features may not work");
     }
     
-    // Iniciar el dump en un hilo separado
-    std::thread hack_thread(hack_prepare, dataDirStr, nullptr, 0);
-    hack_thread.detach();
+    // Inicialización directa sin pasar por NativeBridge
+    LOGI("Starting direct hack_prepare");
+    hack_prepare(dataDirStr, nullptr, 0);
     
-    env->ReleaseStringUTFChars(packageName, pkg);
     env->ReleaseStringUTFChars(dataDir, dataDirStr);
+}
+
+// Función de inicialización para JNI
+extern "C" JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
+    LOGI("Main JNI_OnLoad called - APK version");
+    return JNI_VERSION_1_6;
 }
