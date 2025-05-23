@@ -9,6 +9,7 @@ android {
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"
+        namespace "com.perfare.il2cppdumper" // Agregado el namespace
         
         externalNativeBuild {
             cmake {
@@ -18,7 +19,6 @@ android {
         }
         
         ndk {
-            // No especificamos versión para usar la default de GitHub Actions
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
     }
