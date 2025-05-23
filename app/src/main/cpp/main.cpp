@@ -6,6 +6,7 @@
 #include "hack.h"
 #include "log.h"
 #include "game.h"
+#include <thread>
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_perfare_il2cppdumper_MainActivity_dumpIl2Cpp(
