@@ -1,12 +1,12 @@
-//
-// Created by Perfare on 2020/7/4.
-//
-
-#ifndef ZYGISK_IL2CPPDUMPER_HACK_H
-#define ZYGISK_IL2CPPDUMPER_HACK_H
+#ifndef IL2CPPDUMPER_HACK_H
+#define IL2CPPDUMPER_HACK_H
 
 #include <stddef.h>
 
 void hack_prepare(const char *game_data_dir, void *data, size_t length);
 
-#endif //ZYGISK_IL2CPPDUMPER_HACK_H
+#if defined(__arm__) || defined(__aarch64__)
+void InitDumper(void* vm, const char* game_data_dir);
+#endif
+
+#endif //IL2CPPDUMPER_HACK_H
