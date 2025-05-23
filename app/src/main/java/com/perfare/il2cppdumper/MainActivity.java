@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     
     private ListView appListView;
     private Button dumpButton;
-    private List<AppInfo> appsList = new ArrayList<>();
+    private List<PackageUtils.AppInfo> appsList = new ArrayList<>();
     private String selectedPackage = "";
     
     static {
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         // Get installed apps
         appsList = PackageUtils.getInstalledApps(this);
         List<String> appNames = new ArrayList<>();
-        for (AppInfo app : appsList) {
+        for (PackageUtils.AppInfo app : appsList) {
             appNames.add(app.getName());
         }
         
