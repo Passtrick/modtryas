@@ -44,14 +44,20 @@ void *hack_thread(void *) {
     Il2CppAttach(targetLibName);
     sleep(1);
     
-    // Corregido el cast de void* a uintptr_t
-    uintptr_t getTotalXpOffset = reinterpret_cast<uintptr_t>(Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0));
+    // Usa el namespace FunHax para acceder a las funciones
+    uintptr_t getTotalXpOffset = reinterpret_cast<uintptr_t>(
+        Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0)
+    );
     
     if (getTotalXpOffset != 0) {
-        HookFunction(getTotalXpOffset, GetTotalXp, old_GetTotalXp);
+        HookFunction(
+            getTotalXpOffset, 
+            reinterpret_cast<void*>(FunHax::GetTotalXp), 
+            reinterpret_cast<void**>(&FunHax::old_GetTotalXp)
+        );
     }
     
-    return NULL;
+    return nullptr;
 }
 
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
