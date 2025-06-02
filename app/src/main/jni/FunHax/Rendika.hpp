@@ -29,7 +29,8 @@ uintptr_t Class::className::ResolveProperty(const char* propName, bool isGetter,
     return ResolveMethod(fullName, isGetter ? 0 : 1, assembly, namespaze); \
 }
 
-#define END_DECLARE() };
+  #define END_DECLARE() }; \
+   }
 
 namespace Class {
     // Declaración de la clase MissionStatistics
@@ -41,6 +42,12 @@ namespace Class {
     DECLARE_CLASS(ProjectileBullet)
         static uintptr_t get_Damage;
     END_DECLARE()
+}
+
+// Definición de las variables estáticas
+namespace Class {
+    uintptr_t MissionStatistics::GetTotalXp = 0;
+    uintptr_t ProjectileBullet::get_Damage = 0;
 }
 
 // Hook para GetTotalXp
