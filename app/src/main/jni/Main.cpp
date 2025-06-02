@@ -27,19 +27,28 @@
 
 #include "FunHax/Rendika.hpp"
 
-#define targetLibName enc("libil2cpp.so") // Created By : Rendika | TG : FunHax
+#define targetLibName enc("libil2cpp.so") //Created By : Rendika | TG : FunHax
 #include "Includes/Macros.h"
 
 bool InitFunHax = false;
 uintptr_t libengine;
 
-struct My_Patches {
-    MemoryPatch GetTotalXp;
-} hexPatches;
+// Inicialización de variables estáticas (necesario para el sistema DECLARE_CLASS)
+uintptr_t Class::MissionStatistics::GetTotalXp = 0;
 
 void InitializeAllMethods() {
-    // MissionStatistics
-    Class::MissionStatistics::GetTotalXp = Class::MissionStatistics::ResolveMethod("GetTotalXp", 0, "Assembly-CSharp", "Mission");
+    LOGD("Iniciando resolución de métodos...");
+    
+    // MissionStatistics - Método GetTotalXp
+    Class::MissionStatistics::GetTotalXp = Class::MissionStatistics::ResolveMethod("GetTotalXp", 0);
+    
+    if (Class::MissionStatistics::GetTotalXp) {
+        LOGD("MissionStatistics::GetTotalXp resuelto correctamente: 0x%lx", Class::MissionStatistics::GetTotalXp);
+    } else {
+        LOGD("ERROR: No se pudo resolver MissionStatistics::GetTotalXp");
+    }
+    
+    LOGD("Resolución de métodos completada.");
 }
 
 void *hack_thread(void *) {
@@ -48,15 +57,22 @@ void *hack_thread(void *) {
         sleep(1);
     }
     
+    LOGD("Librería encontrada, iniciando Il2Cpp...");
     Il2CppAttach(targetLibName);
     sleep(1);
     
-    // Inicialización dinámica
+    // Inicialización dinámica de métodos
     InitializeAllMethods();
     
     // Hook manual para GetTotalXp
-    HookFunction(Class::MissionStatistics::GetTotalXp, GetTotalXp, old_GetTotalXp);
+    if (Class::MissionStatistics::GetTotalXp) {
+        HookFunction(Class::MissionStatistics::GetTotalXp, GetTotalXp, old_GetTotalXp);
+        LOGD("Hook aplicado a GetTotalXp");
+    } else {
+        LOGD("No se pudo aplicar hook a GetTotalXp - método no encontrado");
+    }
     
+    LOGD("Inicialización de hacks completada");
     return NULL;
 }
 
@@ -64,8 +80,8 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
 
     const char *features[] = {
-        OBFUSCATE("Category_MISSION HACK"),
-        OBFUSCATE("0_ButtonOnOff_Get Total XP"),
+        OBFUSCATE("Category_XP HACK"),
+        OBFUSCATE("0_ButtonOnOff_High XP Gain"),
     };
 
     int Total_Feature = (sizeof features / sizeof features[0]);
@@ -89,9 +105,13 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,
 
     switch (featNum) {
         case 0:
-            GetRank = boolean;
+            HighXP = boolean;
             if (boolean) {
-                Toast(env, obj, enc("Get Total XP Active !"), ToastLength::LENGTH_SHORT);
+                Toast(env, obj, enc("High XP Gain Active! - 150,000 XP"), ToastLength::LENGTH_SHORT);
+                LOGD("High XP activado - retornará 150,000 XP");
+            } else {
+                Toast(env, obj, enc("High XP Gain Disabled"), ToastLength::LENGTH_SHORT);
+                LOGD("High XP desactivado");
             }
             break;
     }
