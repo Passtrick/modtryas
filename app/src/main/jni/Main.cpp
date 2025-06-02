@@ -109,7 +109,7 @@ int RegisterMenu(JNIEnv *env) {
 
     jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Menu"));
     if (!clazz) return JNI_ERR;
-    if (env->RegisterNatives(clazz, methods, sizeof(methods)/sizeof(methods[0])) return JNI_ERR;
+    if (env->RegisterNatives(clazz, methods, sizeof(methods)/sizeof(methods[0])) < 0) return JNI_ERR;
     return JNI_OK;
 }
 
