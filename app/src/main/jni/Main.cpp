@@ -30,15 +30,15 @@
 #define targetLibName enc("libil2cpp.so")
 #include "Includes/Macros.h"
 
-// Definición de variables globales
+// Variables globales
 bool InitFunHax = false;
 uintptr_t libengine = 0;
 
-// Definición de la función original (requerida por Rendika.hpp)
-int (*FunHax::old_GetTotalXp)(void* instance) = nullptr;
+// Definición de la variable del hook
+int (*FunHax::old_GetTotalXp)(void* instance);
 
 void *hack_thread(void *) {
-    // Esperar a que se cargue la librería
+    // Esperar carga de la librería
     while (!libengine) {
         libengine = Tools::GetBaseAddress(targetLibName);
         sleep(1);
@@ -48,24 +48,19 @@ void *hack_thread(void *) {
     Il2CppAttach(targetLibName);
     sleep(1);
     
-    // Obtener offset de la función
-    uintptr_t getTotalXpOffset = reinterpret_cast<uintptr_t>(
-        Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0)
-    );
+    // Obtener offset y aplicar hook
+    uintptr_t getTotalXpOffset = (uintptr_t)Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0);
     
-    // Aplicar el hook si se encontró el offset
     if (getTotalXpOffset != 0) {
-        HookFunction(
-            getTotalXpOffset,
-            reinterpret_cast<void*>(FunHax::GetTotalXp),
-            reinterpret_cast<void**>(FunHax::old_GetTotalXp)  // ¡Sin & adicional!
-        );
+        // SOLUCIÓN DEFINITIVA: Usar variable temporal para el hook
+        void* original_ptr = nullptr;
+        Tools::Hook((void*)getTotalXpOffset, (void*)FunHax::GetTotalXp, (void**)&original_ptr);
+        FunHax::old_GetTotalXp = (int (*)(void*))original_ptr;
     }
     
     return nullptr;
 }
 
-// Resto de tus funciones JNI (se mantienen igual)
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
 
@@ -102,7 +97,6 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,
     }
 }
 
-// Funciones de registro JNI (se mantienen igual)
 int RegisterMenu(JNIEnv *env) {
     JNINativeMethod methods[] = {
         {OBFUSCATE("Icon"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void*>(Icon)},
@@ -146,11 +140,9 @@ JNI_OnLoad(JavaVM *vm, void *reserved) {
         return JNI_ERR;
     }
     
-    // Iniciar el hilo de hacking
     pthread_t ptid;
     pthread_create(&ptid, nullptr, hack_thread, nullptr);
     
-    // Registrar natives
     if (RegisterMenu(env) != JNI_OK) return JNI_ERR;
     if (RegisterPreferences(env) != JNI_OK) return JNI_ERR;
     if (RegisterMain(env) != JNI_OK) return JNI_ERR;
