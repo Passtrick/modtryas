@@ -1,13 +1,14 @@
 #pragma once
-#include <map>
-#include <string>
-#include "Includes/Logger.h"
-#include "Engine/Il2Cpp.h"
 
 //
 // Created By RendikaRahardian | TG : FunHax
 // 26 - Apr - 2024
 //
+
+#include <map>
+#include <string>
+#include "Includes/Logger.h"
+#include "Engine/Il2Cpp.h"
 
 // ========== SISTEMA DECLARE_CLASS ==========
 #define DECLARE_CLASS(className) \
@@ -28,23 +29,27 @@ namespace Class { \
             char fullName[256]; \
             snprintf(fullName, sizeof(fullName), "%s%s", prefix, propName); \
             return ResolveMethod(fullName, isGetter ? 0 : 1, assembly, namespaze); \
-        } \
-    };
+        }
 
 #define END_DECLARE() };
 
-// Declaración de la clase MissionStatistics
+// ========== DECLARACIÓN DE CLASES ==========
+
+// Clase para prueba: MissionStatistics
 DECLARE_CLASS(MissionStatistics)
     static uintptr_t GetTotalXp;
 END_DECLARE()
 
-// ========== TUS VARIABLES Y HOOKS EXISTENTES ==========
-bool GetRank = false;
+// ========== VARIABLES DE CONTROL ==========
+bool HighXP = false;
 
+// ========== HOOKS ==========
+
+// Hook para MissionStatistics::GetTotalXp
 int (*old_GetTotalXp)(void *instance);
 int GetTotalXp(void *instance) {
-    if (instance != NULL) {
-        return 100000; // Valor modificado a más de 100,000
+    if (instance != NULL && HighXP) {
+        return 150000; // Valor alto como solicitaste (más de 100 mil)
     }
     return old_GetTotalXp(instance);
 }
