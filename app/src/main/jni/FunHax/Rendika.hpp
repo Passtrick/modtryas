@@ -29,16 +29,15 @@ namespace Class { \
             char fullName[256]; \
             snprintf(fullName, sizeof(fullName), "%s%s", prefix, propName); \
             return ResolveMethod(fullName, isGetter ? 0 : 1, assembly, namespaze); \
-        }
-
-#define END_DECLARE() };
+        } \
+        static uintptr_t GetTotalXp; \
+    }; \
+}
 
 // ========== DECLARACIÓN DE CLASES ==========
 
 // Clase para prueba: MissionStatistics
 DECLARE_CLASS(MissionStatistics)
-    static uintptr_t GetTotalXp;
-END_DECLARE()
 
 // ========== VARIABLES DE CONTROL ==========
 bool HighXP = false;
