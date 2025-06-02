@@ -27,37 +27,45 @@
 
 #include "FunHax/Rendika.hpp"
 
-#define targetLibName enc("libil2cpp.so") //Created By : Rendika | TG : FunHax
+#define targetLibName enc("libil2cpp.so")
 #include "Includes/Macros.h"
 
+// Definición de variables globales
 bool InitFunHax = false;
-uintptr_t libengine;
+uintptr_t libengine = 0;
+
+// Definición de la función original (requerida por Rendika.hpp)
+int (*FunHax::old_GetTotalXp)(void* instance) = nullptr;
 
 void *hack_thread(void *) {
+    // Esperar a que se cargue la librería
     while (!libengine) {
         libengine = Tools::GetBaseAddress(targetLibName);
         sleep(1);
     }
     
+    // Inicializar Il2Cpp
     Il2CppAttach(targetLibName);
     sleep(1);
     
-    // Usa el namespace FunHax para acceder a las funciones
+    // Obtener offset de la función
     uintptr_t getTotalXpOffset = reinterpret_cast<uintptr_t>(
         Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0)
     );
     
+    // Aplicar el hook si se encontró el offset
     if (getTotalXpOffset != 0) {
         HookFunction(
-            getTotalXpOffset, 
-            reinterpret_cast<void*>(FunHax::GetTotalXp), 
-            reinterpret_cast<void**>(&FunHax::old_GetTotalXp)
+            getTotalXpOffset,
+            reinterpret_cast<void*>(FunHax::GetTotalXp),
+            reinterpret_cast<void**>(FunHax::old_GetTotalXp)  // ¡Sin & adicional!
         );
     }
     
     return nullptr;
 }
 
+// Resto de tus funciones JNI (se mantienen igual)
 jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
 
@@ -74,13 +82,13 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     for (int i = 0; i < Total_Feature; i++)
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
 
-    return (ret);
+    return ret;
 }
 
 void Changes(JNIEnv *env, jclass clazz, jobject obj,
-                                        jint featNum, jstring featName, jint value,
-                                        jboolean boolean, jstring str) {
-
+             jint featNum, jstring featName, jint value,
+             jboolean boolean, jstring str) {
+    
     LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d | Text: = %s"), featNum,
          env->GetStringUTFChars(featName, 0), value,
          boolean, str != NULL ? env->GetStringUTFChars(str, 0) : "");
@@ -94,63 +102,58 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,
     }
 }
 
+// Funciones de registro JNI (se mantienen igual)
 int RegisterMenu(JNIEnv *env) {
     JNINativeMethod methods[] = {
-            {OBFUSCATE("Icon"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void *>(Icon)},
-            {OBFUSCATE("IconWebViewData"),  OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void *>(IconWebViewData)},
-            {OBFUSCATE("IsGameLibLoaded"),  OBFUSCATE("()Z"), reinterpret_cast<void *>(isGameLibLoaded)},
-            {OBFUSCATE("Init"),  OBFUSCATE("(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/TextView;)V"), reinterpret_cast<void *>(Init)},
-            {OBFUSCATE("SettingsList"),  OBFUSCATE("()[Ljava/lang/String;"), reinterpret_cast<void *>(SettingsList)},
-            {OBFUSCATE("GetFeatureList"),  OBFUSCATE("()[Ljava/lang/String;"), reinterpret_cast<void *>(GetFeatureList)},
+        {OBFUSCATE("Icon"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void*>(Icon)},
+        {OBFUSCATE("IconWebViewData"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void*>(IconWebViewData)},
+        {OBFUSCATE("IsGameLibLoaded"), OBFUSCATE("()Z"), reinterpret_cast<void*>(isGameLibLoaded)},
+        {OBFUSCATE("Init"), OBFUSCATE("(Landroid/content/Context;Landroid/widget/TextView;Landroid/widget/TextView;)V"), reinterpret_cast<void*>(Init)},
+        {OBFUSCATE("SettingsList"), OBFUSCATE("()[Ljava/lang/String;"), reinterpret_cast<void*>(SettingsList)},
+        {OBFUSCATE("GetFeatureList"), OBFUSCATE("()[Ljava/lang/String;"), reinterpret_cast<void*>(GetFeatureList)},
     };
 
     jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Menu"));
-    if (!clazz)
-        return JNI_ERR;
-    if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) != 0)
-        return JNI_ERR;
+    if (!clazz) return JNI_ERR;
+    if (env->RegisterNatives(clazz, methods, sizeof(methods)/sizeof(methods[0])) return JNI_ERR;
     return JNI_OK;
 }
 
 int RegisterPreferences(JNIEnv *env) {
     JNINativeMethod methods[] = {
-            {OBFUSCATE("Changes"), OBFUSCATE("(Landroid/content/Context;ILjava/lang/String;IZLjava/lang/String;)V"), reinterpret_cast<void *>(Changes)},
+        {OBFUSCATE("Changes"), OBFUSCATE("(Landroid/content/Context;ILjava/lang/String;IZLjava/lang/String;)V"), reinterpret_cast<void*>(Changes)},
     };
     jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Preferences"));
-    if (!clazz)
-        return JNI_ERR;
-    if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) != 0)
-        return JNI_ERR;
+    if (!clazz) return JNI_ERR;
+    if (env->RegisterNatives(clazz, methods, sizeof(methods)/sizeof(methods[0]))) return JNI_ERR;
     return JNI_OK;
 }
 
 int RegisterMain(JNIEnv *env) {
     JNINativeMethod methods[] = {
-            {OBFUSCATE("CheckOverlayPermission"), OBFUSCATE("(Landroid/content/Context;)V"), reinterpret_cast<void *>(CheckOverlayPermission)},
+        {OBFUSCATE("CheckOverlayPermission"), OBFUSCATE("(Landroid/content/Context;)V"), reinterpret_cast<void*>(CheckOverlayPermission)},
     };
     jclass clazz = env->FindClass(OBFUSCATE("com/android/support/Main"));
-    if (!clazz)
-        return JNI_ERR;
-    if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) != 0)
-        return JNI_ERR;
-
+    if (!clazz) return JNI_ERR;
+    if (env->RegisterNatives(clazz, methods, sizeof(methods)/sizeof(methods[0]))) return JNI_ERR;
     return JNI_OK;
 }
 
-extern "C"
-JNIEXPORT jint JNICALL
+extern "C" JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *env;
-    vm->GetEnv((void **) &env, JNI_VERSION_1_6);
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
     
+    // Iniciar el hilo de hacking
     pthread_t ptid;
-    pthread_create(&ptid, NULL, hack_thread, NULL);
+    pthread_create(&ptid, nullptr, hack_thread, nullptr);
     
-    if (RegisterMenu(env) != 0)
-        return JNI_ERR;
-    if (RegisterPreferences(env) != 0)
-        return JNI_ERR;
-    if (RegisterMain(env) != 0)
-        return JNI_ERR;
+    // Registrar natives
+    if (RegisterMenu(env) != JNI_OK) return JNI_ERR;
+    if (RegisterPreferences(env) != JNI_OK) return JNI_ERR;
+    if (RegisterMain(env) != JNI_OK) return JNI_ERR;
+    
     return JNI_VERSION_1_6;
 }
