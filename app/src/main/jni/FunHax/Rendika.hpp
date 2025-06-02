@@ -1,14 +1,14 @@
 #pragma once
-// Created By RendikaRahardian | TG : FunHax
-// 26 - Apr - 2024
 
 namespace FunHax {
-    inline int (*old_GetTotalXp)(void* instance) = nullptr;  // Inicializado como nullptr
+    // Declaramos como extern para que no sea inline
+    extern int (*old_GetTotalXp)(void* instance);
     
+    // La función hook puede ser inline
     inline int GetTotalXp(void* instance) {
         if (instance != nullptr) {
-            return 150000; // High XP value
+            return 150000;
         }
-        return old_GetTotalXp(instance); // Llama a la original si no hay instancia
+        return old_GetTotalXp(instance);
     }
 }
