@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace 'com.android.support'  // Agrega esta línea
     compileSdkVersion 30
     
     defaultConfig {
