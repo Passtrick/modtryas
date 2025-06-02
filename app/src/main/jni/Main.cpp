@@ -33,8 +33,6 @@
 bool InitFunHax = false;
 uintptr_t libengine;
 
-// Eliminadas las redefiniciones - ahora solo se usan las del .hpp
-
 void *hack_thread(void *) {
     while (!libengine) {
         libengine = Tools::GetBaseAddress(targetLibName);
