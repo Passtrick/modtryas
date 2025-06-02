@@ -90,12 +90,11 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     };
 
     int Total_Feature = (sizeof features / sizeof features[0]);
-    ret = (jobjectArray)
-            env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
-                                env->NewStringUTF(""));
+    ret = (jobjectArray)env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")), nullptr);
 
-    for (int i = 0; i < Total_Feature; i++)
+    for (int i = 0; i < Total_Feature; i++) {
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
+    }
 
     return (ret);
 }
@@ -104,9 +103,16 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,
              jint featNum, jstring featName, jint value,
              jboolean boolean, jstring str) {
 
+    const char* featNameStr = env->GetStringUTFChars(featName, nullptr);
+    const char* strStr = str != nullptr ? env->GetStringUTFChars(str, nullptr) : nullptr;
+
     LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d | Text: = %s"), featNum,
-         env->GetStringUTFChars(featName, 0), value,
-         boolean, str != NULL ? env->GetStringUTFChars(str, 0) : "");
+         featNameStr, value, boolean, strStr ? strStr : "");
+
+    env->ReleaseStringUTFChars(featName, featNameStr);
+    if (strStr) {
+        env->ReleaseStringUTFChars(str, strStr);
+    }
 
     switch (featNum) {
         case 0:
