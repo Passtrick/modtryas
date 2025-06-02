@@ -14,6 +14,11 @@
 #include "Includes/Logger.h"
 #include "Includes/Utils.h"
 
+#include "Struct/Vector3.h"
+#include "Struct/Vector2.h"
+#include "Struct/Rect.h"
+#include "Struct/Quaternion.h"
+
 #include "Engine/Il2Cpp.h"
 #include "Engine/Tools.h"
 
@@ -22,29 +27,19 @@
 
 #include "FunHax/Rendika.hpp"
 
-#define targetLibName enc("libil2cpp.so")
+#define targetLibName enc("libil2cpp.so") // Created By : Rendika | TG : FunHax
 #include "Includes/Macros.h"
 
 bool InitFunHax = false;
-bool HighDamageActive = false;
 uintptr_t libengine;
 
+struct My_Patches {
+    MemoryPatch GetTotalXp;
+} hexPatches;
+
 void InitializeAllMethods() {
-    // Inicializamos los métodos que necesitamos
-    Class::MissionStatistics::GetTotalXp = Class::MissionStatistics::ResolveMethod("GetTotalXp");
-    Class::ProjectileBullet::get_Damage = Class::ProjectileBullet::ResolveProperty("Damage");
-    
-    if (!Class::MissionStatistics::GetTotalXp) {
-        LOGD(OBFUSCATE("Error: No se pudo encontrar GetTotalXp"));
-    } else {
-        LOGD(OBFUSCATE("GetTotalXp encontrado en: 0x%X"), Class::MissionStatistics::GetTotalXp);
-    }
-    
-    if (!Class::ProjectileBullet::get_Damage) {
-        LOGD(OBFUSCATE("Error: No se pudo encontrar get_Damage"));
-    } else {
-        LOGD(OBFUSCATE("get_Damage encontrado en: 0x%X"), Class::ProjectileBullet::get_Damage);
-    }
+    // MissionStatistics
+    Class::MissionStatistics::GetTotalXp = Class::MissionStatistics::ResolveMethod("GetTotalXp", 0, "Assembly-CSharp", "Mission");
 }
 
 void *hack_thread(void *) {
@@ -53,28 +48,14 @@ void *hack_thread(void *) {
         sleep(1);
     }
     
-    LOGD(OBFUSCATE("Lib encontrada en: 0x%X"), libengine);
-    
     Il2CppAttach(targetLibName);
     sleep(1);
     
     // Inicialización dinámica
     InitializeAllMethods();
     
-    // Aplicamos los hooks si encontramos los métodos
-    if (Class::MissionStatistics::GetTotalXp) {
-        HookFunction(Class::MissionStatistics::GetTotalXp, GetTotalXpHook, old_GetTotalXp);
-        LOGD(OBFUSCATE("Hook aplicado a GetTotalXp"));
-    } else {
-        LOGD(OBFUSCATE("No se pudo aplicar el hook a GetTotalXp"));
-    }
-    
-    if (Class::ProjectileBullet::get_Damage) {
-        HookFunction(Class::ProjectileBullet::get_Damage, get_DamageHook, old_get_Damage);
-        LOGD(OBFUSCATE("Hook aplicado a get_Damage"));
-    } else {
-        LOGD(OBFUSCATE("No se pudo aplicar el hook a get_Damage"));
-    }
+    // Hook manual para GetTotalXp
+    HookFunction(Class::MissionStatistics::GetTotalXp, GetTotalXp, old_GetTotalXp);
     
     return NULL;
 }
@@ -83,55 +64,39 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
 
     const char *features[] = {
-        OBFUSCATE("Category_XP_HACK"),
-        OBFUSCATE("0_ButtonOnOff_GetHighXP"),
-        OBFUSCATE("Category_DAMAGE_HACK"),
-        OBFUSCATE("1_ButtonOnOff_HighDamage")
+        OBFUSCATE("Category_MISSION HACK"),
+        OBFUSCATE("0_ButtonOnOff_Get Total XP"),
     };
 
     int Total_Feature = (sizeof features / sizeof features[0]);
-    ret = (jobjectArray)env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")), nullptr);
+    ret = (jobjectArray)
+            env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
+                                env->NewStringUTF(""));
 
-    for (int i = 0; i < Total_Feature; i++) {
+    for (int i = 0; i < Total_Feature; i++)
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
-    }
 
     return (ret);
 }
 
 void Changes(JNIEnv *env, jclass clazz, jobject obj,
-             jint featNum, jstring featName, jint value,
-             jboolean boolean, jstring str) {
-
-    const char* featNameStr = env->GetStringUTFChars(featName, nullptr);
-    const char* strStr = str != nullptr ? env->GetStringUTFChars(str, nullptr) : nullptr;
+                                        jint featNum, jstring featName, jint value,
+                                        jboolean boolean, jstring str) {
 
     LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d | Text: = %s"), featNum,
-         featNameStr, value, boolean, strStr ? strStr : "");
-
-    env->ReleaseStringUTFChars(featName, featNameStr);
-    if (strStr) {
-        env->ReleaseStringUTFChars(str, strStr);
-    }
+         env->GetStringUTFChars(featName, 0), value,
+         boolean, str != NULL ? env->GetStringUTFChars(str, 0) : "");
 
     switch (featNum) {
         case 0:
-            InitFunHax = boolean;
+            GetRank = boolean;
             if (boolean) {
-                Toast(env, obj, enc("High XP Active!"), ToastLength::LENGTH_SHORT);
-            }
-            break;
-            
-        case 1:
-            HighDamageActive = boolean;
-            if (boolean) {
-                Toast(env, obj, enc("High Damage Active!"), ToastLength::LENGTH_SHORT);
+                Toast(env, obj, enc("Get Total XP Active !"), ToastLength::LENGTH_SHORT);
             }
             break;
     }
 }
 
-// ... (el resto de las funciones JNI/Java permanecen igual)
 int RegisterMenu(JNIEnv *env) {
     JNINativeMethod methods[] = {
             {OBFUSCATE("Icon"), OBFUSCATE("()Ljava/lang/String;"), reinterpret_cast<void *>(Icon)},
@@ -171,6 +136,7 @@ int RegisterMain(JNIEnv *env) {
         return JNI_ERR;
     if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) != 0)
         return JNI_ERR;
+
     return JNI_OK;
 }
 
