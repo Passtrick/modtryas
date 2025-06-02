@@ -2,7 +2,7 @@
 #include <map>
 #include <jni.h>
 #include <unistd.h>
-#include "Il2cpp.h"
+#include "Il2Cpp.h"
 #include "xDL/xdl.h"
 
 #define LOG_TAG "FunHax—Il2CppSdk""
