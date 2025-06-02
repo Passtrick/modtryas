@@ -160,6 +160,8 @@ int RegisterMain(JNIEnv *env) {
     return JNI_OK;
 }
 
+// Reemplaza la línea 179 y el área problemática en Main.cpp
+
 extern "C"
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *vm, void *reserved) {
@@ -177,3 +179,4 @@ JNI_OnLoad(JavaVM *vm, void *reserved) {
         return JNI_ERR;
     return JNI_VERSION_1_6;
 }
+// ← Asegúrate de que esta sea la última línea del archivo, sin } extra
