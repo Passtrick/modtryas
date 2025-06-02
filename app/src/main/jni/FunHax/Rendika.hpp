@@ -5,50 +5,10 @@
 // 26 - Apr - 2024
 //
 
-#include <map>
-#include <string>
-#include "Includes/Logger.h"
-#include "Engine/Il2Cpp.h"
-
-// ========== SISTEMA DECLARE_CLASS ==========
-#define DECLARE_CLASS(className) \
-namespace Class { \
-    struct className { \
-        static uintptr_t ResolveMethod(const char* methodName, int argsCount = 0, const char* assembly = "Assembly-CSharp", const char* namespaze = "") { \
-            void* method = Il2CppGetMethodOffset(assembly, namespaze, #className, methodName, argsCount); \
-            if (!method && namespaze[0] != '\0') { \
-                method = Il2CppGetMethodOffset(assembly, "", #className, methodName, argsCount); \
-            } \
-            if (!method) { \
-                LOGD("Método %s no encontrado en %s.%s", methodName, namespaze, #className); \
-            } \
-            return (uintptr_t)method; \
-        } \
-        static uintptr_t ResolveProperty(const char* propName, bool isGetter = true, const char* assembly = "Assembly-CSharp", const char* namespaze = "") { \
-            const char* prefix = isGetter ? "get_" : "set_"; \
-            char fullName[256]; \
-            snprintf(fullName, sizeof(fullName), "%s%s", prefix, propName); \
-            return ResolveMethod(fullName, isGetter ? 0 : 1, assembly, namespaze); \
-        } \
-        static uintptr_t GetTotalXp; \
-    }; \
-}
-
-// ========== DECLARACIÓN DE CLASES ==========
-
-// Clase para prueba: MissionStatistics
-DECLARE_CLASS(MissionStatistics)
-
-// ========== VARIABLES DE CONTROL ==========
-bool HighXP = false;
-
-// ========== HOOKS ==========
-
-// Hook para MissionStatistics::GetTotalXp
 int (*old_GetTotalXp)(void *instance);
 int GetTotalXp(void *instance) {
-    if (instance != NULL && HighXP) {
-        return 150000; // Valor alto como solicitaste (más de 100 mil)
+    if (instance != NULL) {
+        return 150000; // High XP value over 100k
     }
     return old_GetTotalXp(instance);
 }
