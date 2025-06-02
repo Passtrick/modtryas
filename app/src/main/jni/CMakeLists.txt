@@ -33,7 +33,7 @@ add_library(MyLibName SHARED
     KittyMemory/MemoryPatch.cpp
     KittyMemory/MemoryBackup.cpp
     KittyMemory/KittyUtils.cpp
-    Engine/Il2cpp.cpp
+    Engine/Il2Cpp.cpp
     Engine/Tools.cpp
 )
 
