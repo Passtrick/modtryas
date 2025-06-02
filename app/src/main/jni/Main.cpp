@@ -33,22 +33,12 @@
 bool InitFunHax = false;
 uintptr_t libengine;
 
-// Inicialización de variables estáticas (necesario para el sistema DECLARE_CLASS)
-uintptr_t Class::MissionStatistics::GetTotalXp = 0;
-
-void InitializeAllMethods() {
-    LOGD("Iniciando resolución de métodos...");
-    
-    // MissionStatistics - Método GetTotalXp
-    Class::MissionStatistics::GetTotalXp = Class::MissionStatistics::ResolveMethod("GetTotalXp", 0);
-    
-    if (Class::MissionStatistics::GetTotalXp) {
-        LOGD("MissionStatistics::GetTotalXp resuelto correctamente: 0x%lx", Class::MissionStatistics::GetTotalXp);
-    } else {
-        LOGD("ERROR: No se pudo resolver MissionStatistics::GetTotalXp");
+int (*old_GetTotalXp)(void *instance);
+int GetTotalXp(void *instance) {
+    if (instance != NULL) {
+        return 150000; 
     }
-    
-    LOGD("Resolución de métodos completada.");
+    return old_GetTotalXp(instance);
 }
 
 void *hack_thread(void *) {
@@ -57,22 +47,15 @@ void *hack_thread(void *) {
         sleep(1);
     }
     
-    LOGD("Librería encontrada, iniciando Il2Cpp...");
     Il2CppAttach(targetLibName);
     sleep(1);
     
-    // Inicialización dinámica de métodos
-    InitializeAllMethods();
+    uintptr_t getTotalXpOffset = Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0);
     
-    // Hook manual para GetTotalXp
-    if (Class::MissionStatistics::GetTotalXp) {
-        HookFunction(Class::MissionStatistics::GetTotalXp, GetTotalXp, old_GetTotalXp);
-        LOGD("Hook aplicado a GetTotalXp");
-    } else {
-        LOGD("No se pudo aplicar hook a GetTotalXp - método no encontrado");
+    if (getTotalXpOffset != 0) {
+        HookFunction(getTotalXpOffset, GetTotalXp, old_GetTotalXp);
     }
     
-    LOGD("Inicialización de hacks completada");
     return NULL;
 }
 
@@ -80,8 +63,8 @@ jobjectArray GetFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
 
     const char *features[] = {
-        OBFUSCATE("Category_XP HACK"),
-        OBFUSCATE("0_ButtonOnOff_High XP Gain"),
+        OBFUSCATE("Category_TEST HACK"),
+        OBFUSCATE("0_ButtonOnOff_High XP (150k)"),
     };
 
     int Total_Feature = (sizeof features / sizeof features[0]);
@@ -105,13 +88,8 @@ void Changes(JNIEnv *env, jclass clazz, jobject obj,
 
     switch (featNum) {
         case 0:
-            HighXP = boolean;
             if (boolean) {
-                Toast(env, obj, enc("High XP Gain Active! - 150,000 XP"), ToastLength::LENGTH_SHORT);
-                LOGD("High XP activado - retornará 150,000 XP");
-            } else {
-                Toast(env, obj, enc("High XP Gain Disabled"), ToastLength::LENGTH_SHORT);
-                LOGD("High XP desactivado");
+                Toast(env, obj, enc("High XP Active (150k)"), ToastLength::LENGTH_SHORT);
             }
             break;
     }
@@ -160,8 +138,6 @@ int RegisterMain(JNIEnv *env) {
     return JNI_OK;
 }
 
-// Reemplaza la línea 179 y el área problemática en Main.cpp
-
 extern "C"
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *vm, void *reserved) {
@@ -179,4 +155,3 @@ JNI_OnLoad(JavaVM *vm, void *reserved) {
         return JNI_ERR;
     return JNI_VERSION_1_6;
 }
-// ← Asegúrate de que esta sea la última línea del archivo, sin } extra
