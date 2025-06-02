@@ -4,6 +4,12 @@
 #include "Includes/Logger.h"
 #include "Engine/Il2Cpp.h"
 
+//
+// Created By RendikaRahardian | TG : FunHax
+// 26 - Apr - 2024
+//
+
+// ========== SISTEMA DECLARE_CLASS ==========
 #define DECLARE_CLASS(className) \
 namespace Class { \
     struct className { \
@@ -22,10 +28,23 @@ namespace Class { \
             char fullName[256]; \
             snprintf(fullName, sizeof(fullName), "%s%s", prefix, propName); \
             return ResolveMethod(fullName, isGetter ? 0 : 1, assembly, namespaze); \
-        }
+        } \
+    };
 
 #define END_DECLARE() };
 
+// Declaración de la clase MissionStatistics
 DECLARE_CLASS(MissionStatistics)
     static uintptr_t GetTotalXp;
 END_DECLARE()
+
+// ========== TUS VARIABLES Y HOOKS EXISTENTES ==========
+bool GetRank = false;
+
+int (*old_GetTotalXp)(void *instance);
+int GetTotalXp(void *instance) {
+    if (instance != NULL) {
+        return 100000; // Valor modificado a más de 100,000
+    }
+    return old_GetTotalXp(instance);
+}
