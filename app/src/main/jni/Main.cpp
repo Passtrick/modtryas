@@ -33,13 +33,7 @@
 bool InitFunHax = false;
 uintptr_t libengine;
 
-int (*old_GetTotalXp)(void *instance);
-int GetTotalXp(void *instance) {
-    if (instance != NULL) {
-        return 150000; 
-    }
-    return old_GetTotalXp(instance);
-}
+// Eliminadas las redefiniciones - ahora solo se usan las del .hpp
 
 void *hack_thread(void *) {
     while (!libengine) {
@@ -50,7 +44,8 @@ void *hack_thread(void *) {
     Il2CppAttach(targetLibName);
     sleep(1);
     
-    uintptr_t getTotalXpOffset = Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0);
+    // Corregido el cast de void* a uintptr_t
+    uintptr_t getTotalXpOffset = reinterpret_cast<uintptr_t>(Il2CppGetMethodOffset(Assembly, "", "MissionStatistics", enc("GetTotalXp"), 0));
     
     if (getTotalXpOffset != 0) {
         HookFunction(getTotalXpOffset, GetTotalXp, old_GetTotalXp);
